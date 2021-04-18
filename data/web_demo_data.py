@@ -6,8 +6,8 @@ from sqlalchemy import create_engine
 
 
 # 建立連線函數
-def CreateDBEngine():
-    secretFile = json.load(open('secretFile.json', 'r'))
+def CreateDBEngine(secretFileName='dbSecret.json'):
+    secretFile = json.load(open(secretFileName, 'r'))
     host = secretFile['host']
     username = secretFile['user']
     password = secretFile['password']
@@ -36,8 +36,14 @@ sum(COLUMN59) as deaths_nums,  # 死亡人口數
 sum(COLUMN66) as immigration_nums,  # 遷入人口數
 sum(COLUMN67) as migration_nums,  # 遷出人口數
 round(sum(COLUMN52)/sum(COLUMN2)*1000, 2) as birth_rate,  # 粗出生率=出生人口數/人口數
+round(sum(COLUMN59)/sum(COLUMN2)*1000, 2) as death_rate,  # 粗死亡率=死亡人口數/人口數
+round((sum(COLUMN66)-sum(COLUMN68))/sum(COLUMN2)*1000, 2) as immigration_rate,  # 遷入率=(遷入人口數-鄉鎮區內住址變更之遷出人口數)/人口數
+round((sum(COLUMN67)-sum(COLUMN69))/sum(COLUMN2)*1000, 2) as migration_rate,  # 遷出率=(遷出人口數-鄉鎮區內住址變更之遷出人口數)/人口數
 round(sum(COLUMN52-COLUMN59)/sum(COLUMN2)*1000, 2) as nature_increase_rate,  # 自然增加率=(出生人口數-死亡人口數)/人口數
 round(sum(COLUMN66-COLUMN67)/sum(COLUMN2)*1000, 2) as social_increase_rate,  # 社會增加率=(遷入人口數-遷出人口數)/人口數
+round(sum(COLUMN33)/sum(COLUMN33+COLUMN34+COLUMN35)*100, 2) as toddler_population,  # 幼年人口佔比
+round(sum(COLUMN34)/sum(COLUMN33+COLUMN34+COLUMN35)*100, 2) as worker_population,  # 青壯年人口佔比
+round(sum(COLUMN35)/sum(COLUMN33+COLUMN34+COLUMN35)*100, 2) as elderly_population,  # 老年人口佔比
 
 # 婚育概況
 sum(COLUMN60) as married_pairs,  # 結婚對數
@@ -198,11 +204,11 @@ housePriceMedianData = housePriceData.groupby(by=['county', 'town', 'year'], as_
     reset_index().\
     rename(columns={'median': 'house_median_price', 'count': 'countNums'})
 
-# 查看計算樣本數少的鄉鎮市區
-housePriceMedianData[housePriceMedianData['countNums'] <= 30].sort_values(by='countNums', ascending=True)
-# 各年度鄉鎮市區房價中位數全樣本筆數共有2671筆 其中有929筆樣本計算中位數的樣本低於30筆
-# 低於30筆計算出來的中位數可能不具有代表性 將低於30筆的樣本移除
-housePriceMedianData = housePriceMedianData[housePriceMedianData['countNums'] > 30]
+# # 查看計算樣本數少的鄉鎮市區
+# housePriceMedianData[housePriceMedianData['countNums'] <= 30].sort_values(by='countNums', ascending=True)
+# # 各年度鄉鎮市區房價中位數全樣本筆數共有2671筆 其中有929筆樣本計算中位數的樣本低於30筆
+# # 低於30筆計算出來的中位數可能不具有代表性 將低於30筆的樣本移除
+# housePriceMedianData = housePriceMedianData[housePriceMedianData['countNums'] > 30]
 
 # 處理不動產實價登錄 新竹市及嘉義市未分區狀況 將縣市資料套用至鄉鎮市區
 for county in ['嘉義市', '新竹市']:
@@ -239,6 +245,24 @@ housePriceToIncome['house_price_to_income'] = housePriceToIncome['house_median_p
 # # 檢查資料
 # housePriceToIncome.to_csv('checkData.csv', encoding='utf-8-sig')
 
+
+# '''
+# 併入失業率資訊
+# '''
+#
+# # 查詢失業率資料
+# sqlQuery = '''
+# select
+# year,  # 年份
+# area,  # 縣市/地區
+# total as unemployment_rate  # 失業率
+# from project.unemployment_rate
+# '''
+#
+# # 取得資料
+# unemploymentRateData = pd.read_sql(sql=sqlQuery, con=CreateDBEngine())
+
+
 '''
 彙整資料至資料庫
 '''
@@ -251,14 +275,18 @@ webOverViewData = pd.merge(webOverViewData,
                            how='left',
                            on=['county', 'town'])
 
-# 計算公幼涵蓋比率(公幼核定名額總數/3-6歲學齡人口)
-webOverViewData['public_cover_ratio'] = webOverViewData['public_kindergarten_quota']/\
-                                        webOverViewData['age_3_6_population']
+# 計算公幼涵蓋比率(%)(公幼核定名額總數/3-6歲學齡人口)
+webOverViewData['public_kindergarten_cover_ratio'] = webOverViewData['public_kindergarten_quota']/\
+                                                     webOverViewData['age_3_6_population']*100
 
-# 計算公幼+非營利涵蓋比率(公幼+非營利核定名額總數/3-6歲學齡人口)
-webOverViewData['public_npo_cover_ratio'] = (webOverViewData['public_kindergarten_quota'] +
-                                             webOverViewData['npo_kindergarten_quota'])/\
-                                            webOverViewData['age_3_6_population']
+# 計算公幼+非營利涵蓋比率(%)(公幼+非營利核定名額總數/3-6歲學齡人口)
+webOverViewData['public_npo_kindergarten_cover_ratio'] = (webOverViewData['public_kindergarten_quota'] +
+                                                          webOverViewData['npo_kindergarten_quota'])/\
+                                                         webOverViewData['age_3_6_population']*100
+
+# 計算幼兒園涵蓋比率(%)(公幼+非營利+私幼核定名額總數/3-6歲學齡人口)
+webOverViewData['total_kindergarten_cover_ratio'] = webOverViewData['total_kindergarten_quota']/\
+                                                    webOverViewData['age_3_6_population']*100
 
 # 將房價所得比資料併入segisData
 webOverViewData = pd.merge(webOverViewData,
@@ -268,13 +296,44 @@ webOverViewData = pd.merge(webOverViewData,
                            how='left',
                            on=['year', 'county', 'town'])
 
-# 調整資料四捨五入小數點
-webOverViewData = webOverViewData.round({'public_cover_ratio': 2,
-                                         'public_npo_cover_ratio': 2,
-                                         'house_price_to_income': 2})
+# 整理全國鄉鎮縣市指標排名
+rankData = webOverViewData[['year', 'birth_rate', 'births_nums', 'married_rate',
+                            'married_pairs', 'public_kindergarten_cover_ratio', 'house_price_to_income']].\
+    groupby(by=['year']).\
+    transform(lambda x: x.rank(method='min', ascending=False))
+# 更換欄位名稱
+rankData.columns = [elem + '_rank' for elem in rankData.columns]
+# 合併資料
+webOverViewData = pd.concat([webOverViewData, rankData], axis=1)
 
-# 輸出資料至資料庫
+
+# 整理可支配所得中位數排名
+rankData = disposableIncomeData[['year', 'disposable_income_median']].\
+    groupby(by=['year']).\
+    transform(lambda x: x.rank(method='min', ascending=False)).\
+    rename(columns={'disposable_income_median': 'disposable_income_median_rank'})
+disposableIncomeData = pd.concat([disposableIncomeData, rankData], axis=1)
+
+# 併入可支配所得中位數排名
+webOverViewData = pd.merge(webOverViewData,
+                           disposableIncomeData[['year', 'county', 'disposable_income_median_rank']],
+                           how='left',
+                           on=['year', 'county'])
+
+# 調整資料四捨五入小數點
+webOverViewData = webOverViewData.round({'public_kindergarten_cover_ratio': 2,
+                                         'public_npo_kindergarten_cover_ratio': 2,
+                                         'total_kindergarten_cover_ratio': 2,
+                                         'house_price_to_income': 2,
+                                         'house_median_price': 0,
+                                         'disposable_income_median': 0})
+
+# 輸出資料至資料庫(教室)
 webOverViewData.to_sql('web_overview_data', CreateDBEngine(), index=False, if_exists='replace')
+# 輸出資料至資料庫(GCP)
+webOverViewData.to_sql('web_overview_data',
+                       CreateDBEngine(secretFileName='dbGcpSecret.json'),
+                       index=False, if_exists='replace')
 
 # # 檢查資料
 # webOverViewData.to_csv('webOverViewData.csv', encoding='utf-8-sig')

@@ -80,6 +80,9 @@ for colName in output.columns:
     else:
         output[colName] = output[colName].astype('float64')
 
+# 例外處理: 將桃園縣改為桃園市
+output['county'] = output['county'].replace(to_replace='桃園縣', value='桃園市')
+
 # 輸出資料表
 output.to_csv('family_income_exp.csv', index=False, encoding='utf-8-sig')
 

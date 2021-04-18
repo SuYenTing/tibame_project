@@ -9,7 +9,8 @@ from sqlalchemy import create_engine
 postalCodeData = pd.read_json('郵遞區號資料.json')
 
 # 讀取資料庫帳密資訊
-secretFile = json.load(open('dbSecret.json', 'r', encoding='utf-8'))
+# secretFile = json.load(open('dbSecret.json', 'r', encoding='utf-8'))
+secretFile = json.load(open('dbGcpSecret.json', 'r', encoding='utf-8'))
 dbHost = secretFile['host']
 dbUser = secretFile['user']
 dbPassword = secretFile['password']
