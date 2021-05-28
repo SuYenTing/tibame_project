@@ -1,5 +1,10 @@
 # 資料整理程式-平均每戶家庭收支按區域別分
 # 2021/03/27 蘇彥庭
+# 資料來源說明
+# 中華民國統計資訊網 -> 家庭收支調查 -> 統計表 -> 調查報告
+# https://www.stat.gov.tw/ct.asp?xItem=27900&ctNode=511&mp=4
+# 「第二表 - 平均每戶家庭收支按區域別分」
+
 import os
 import pandas as pd
 import json

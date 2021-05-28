@@ -1,5 +1,9 @@
-# 資料整理程式-家庭住宅及主要設備概況按區域別分資料
+# 資料整理程式-房屋自有率
 # 2021/04/18 蘇彥庭
+# 中華民國統計資訊網 -> 家庭收支調查 -> 統計表 -> 調查報告
+# https://www.stat.gov.tw/ct.asp?xItem=27900&ctNode=511&mp=4
+# 「第八表 - 家庭住宅及主要設備概況按區域別分」
+
 import sys
 import os
 import pandas as pd

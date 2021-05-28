@@ -1,5 +1,8 @@
 # 全國教保資訊網-幼兒園查詢-基本資料查詢
 # 2021/03/18 蘇彥庭
+# 資料來源: 全國教保資訊網
+# https://ap.ece.moe.edu.tw/webecems/pubSearch.aspx
+
 import re
 import requests
 import pandas as pd

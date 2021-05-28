@@ -1,5 +1,10 @@
 # 資料整理程式-育齡婦女之年齡別生育率
 # 2021/04/21 蘇彥庭
+# 行政院性別平等會: 重要性別統計資料庫
+# https://www.gender.ey.gov.tw/gecdb/Stat_Statistics_Field.aspx
+# 首頁 -> 人口、婚姻與家庭 -> 生育 -> 育齡婦女之年齡別生育率
+# 首頁 -> 人口、婚姻與家庭 -> 生育 -> 首次生產婦女之平均年齡(生第一胎平均年齡)
+
 import sys
 import os
 import numpy as np

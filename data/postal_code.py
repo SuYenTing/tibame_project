@@ -1,6 +1,8 @@
 # 整理郵遞區號資訊至資料庫
 # 2021/04/01 蘇彥庭
-# 資料來源: 政府資料開放平台-3碼郵遞區號與行政區地理座標對照KML: https://data.gov.tw/dataset/37759
+# 資料來源: 政府資料開放平台-3碼郵遞區號與行政區地理座標對照KML
+# https://data.gov.tw/dataset/37759
+
 import pandas as pd
 import json
 from sqlalchemy import create_engine
