@@ -1,17 +1,20 @@
 # TibaMe CEB102專題 - Circle of Life: 少子女化保衛戰
 
-
 此專題有參加台北市電腦商業同業公會主辦之2021資料創新應用競賽內政黑客松組，目前通過海選晉級決賽。
+
+* [2021資料創新應用競賽官方網站](https://opendata-contest.tca.org.tw/)
+
+![](https://github.com/SuYenTing/tibame_project/blob/main/image/poster.png)
 
 ## 專題相關連結
 
 * [Circle of Life: 少子女化保衛戰](http://3.13.171.111/)
 * [專題閃電秀影片](https://www.youtube.com/watch?v=9o5-INL75sw)
-* [專題PPT]()
+* [專題PPT](https://github.com/SuYenTing/tibame_project/tree/main/ppt)
 
 ## 專題架構
 
-
+![](https://github.com/SuYenTing/tibame_project/blob/main/image/architecture.png)
 
 ## 程式檔案說明
 
@@ -30,6 +33,7 @@
 
 * model: 模型預測與分析
     * experiment.ipynb: 早期版本，預測各鄉鎮市區出生率
+    * main.ipynb: 目前版本，以內政部大數據模擬資料為基底做預測
 
 * web: 網站程式及Docker部署設定檔案
     * app: web程式碼(Python Dash)
